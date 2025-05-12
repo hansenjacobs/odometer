@@ -32,11 +32,16 @@ def next_combination(current_values: Dict[str, any], dials: Dict[str, List[any]]
 
     for field in reversed(dials.keys()):
         if field not in new_values:
+            # If a dial is not in current_values, skip it
             continue
 
         if carry_increment:
             dial = dials[field]
+            if len(dial) < 1:
+                raise ValueError(f"Dial '{field}' has no values defined.")
             current_value = new_values[field]
+            if current_value not in dial:
+                raise ValueError(f"Invalid value for '{field}' dial: {current_value}")
             current_index = dial.index(current_value)
             if current_index + 1 < len(dial):
                 new_values[field] = dial[current_index + 1]
