@@ -1,5 +1,6 @@
 from typing import Dict, List
 
+
 def next_combination(current_values: Dict[str, any], dials: Dict[str, List[any]]) -> Dict[str, any]:
     """
     Calculate the next combination of values for an odometer-like system.
@@ -14,7 +15,7 @@ def next_combination(current_values: Dict[str, any], dials: Dict[str, List[any]]
         add_skipped_dials (bool, optional): If True, any dials that are skipped (i.e., not present in current_values)
             will be added to the result with their least siginificant value. Defaults to False.
     Returns:
-        Dict[str, any]: A dictionary representing the next combination of values for the odometer. 
+        Dict[str, any]: A dictionary representing the next combination of values for the odometer.
         If all combinations are exhausted, it returns None.
     Example:
         current_values = {'section': 100, 'row': 'B', 'seat': 3}
@@ -45,6 +46,6 @@ def next_combination(current_values: Dict[str, any], dials: Dict[str, List[any]]
                 carry_increment = True
         else:
             break
-    
+
     # If carry_increment is still True, all combinations have been exhausted
     return None if carry_increment else new_values
