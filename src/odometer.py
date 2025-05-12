@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-def next_combination(current_values: Dict[str, any], dials: Dict[str, List[any]], add_skipped_dials: bool = False) -> Dict[str, any]:
+def next_combination(current_values: Dict[str, any], dials: Dict[str, List[any]]) -> Dict[str, any]:
     """
     Calculate the next combination of values for an odometer-like system.
     This function simulates the behavior of an odometer, where each "dial" can take on a set of prefedined values. It
