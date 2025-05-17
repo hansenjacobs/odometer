@@ -76,7 +76,6 @@ class Dial:
     def current_value(self):
         return self.values[self.current_index]
     
-    @property
     def increment(self):
         carry = False       # Should the increment carry over to the next dial?
         if self.current_index + 1 < len(self.values):
