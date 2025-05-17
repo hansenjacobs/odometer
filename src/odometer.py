@@ -54,3 +54,34 @@ def next_combination(current_values: Dict[str, any], dials: Dict[str, List[any]]
 
     # If carry_increment is still True, all combinations have been exhausted
     return None if carry_increment else new_values
+
+class Odometer:
+    pass
+
+class Dial:
+    def __init__(self, name: str, values: List[any]):
+        if not name:
+            raise ValueError('Dial name cannot be emtpy')
+        if not values:
+            raise ValueError('Dial values cannot be empty')
+        
+        self.name = name
+        self.values = values
+        self.current_index = 0
+
+    def __len__(self):
+        return len(self.values)
+
+    @property
+    def current_value(self):
+        return self.values[self.current_index]
+    
+    @property
+    def increment(self):
+        carry = False       # Should the increment carry over to the next dial?
+        if self.current_index + 1 < len(self.values):
+            self.current_index += 1
+        else:
+            self.current_index = 0
+            carry = True
+        return self.current_value, carry
