@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Union
 
 
 def next_combination(current_values: Dict[str, any], dials: Dict[str, List[any]]) -> Dict[str, any]:
@@ -55,15 +55,15 @@ def next_combination(current_values: Dict[str, any], dials: Dict[str, List[any]]
     # If carry_increment is still True, all combinations have been exhausted
     return None if carry_increment else new_values
 
-class Odometer:
-    pass
 
 class Dial:
     def __init__(self, name: str, values: List[any]):
         if not name:
-            raise ValueError('Dial name cannot be emtpy')
+            raise ValueError('Dial name cannot be emtpy.')
         if not values:
-            raise ValueError('Dial values cannot be empty')
+            raise ValueError('Dial values for {name} dial cannot be empty.')
+        if not isinstance(values, list):
+            raise TypeError('Dial values for {name} dial must be a list.')
         
         self.name = name
         self.values = values
@@ -84,3 +84,28 @@ class Dial:
             self.current_index = 0
             carry = True
         return self.current_value, carry
+
+
+class Odometer:
+    def __init__(self, dials: Union[Dict[str, List[any]], List[Dial]]):
+        self.dials = {}
+        self.dial_names = []
+        if isinstance(dials, dict):
+            self._create_dials_from_dict(self, dials)
+        elif isinstance(dials, list):
+            self._create_dials_from_list(self, dials)
+        self.dial_names_ordered = reversed([dial.name for dial in self.dials.values()])
+            
+    def _create_dials_from_dict(self, dials: Dict[str, List[any]]):
+        for name, values in dials.items():
+            self.dials[name] = Dial(name, values)
+
+    def _create_dials_from_list(self, dials: List[Dial]):
+        for index, dial in enumerate(dials):
+            if not isinstance(dial, Dial):
+                raise TypeError(f'Invalid dial type at index {index}. Expected Dial instance.')
+        self.dials = {dial.name: dial for dial in dials}
+
+    def increment(self):
+        for dial in self.dial_names_ordered:
+            pass
