@@ -83,18 +83,17 @@ class Dial:
         else:
             self.current_index = 0
             carry = True
-        return self.current_value, carry
+        return carry
 
 
 class Odometer:
     def __init__(self, dials: Union[Dict[str, List[any]], List[Dial]]):
+        self._exhausted = False
         self.dials = {}
-        self.dial_names = []
         if isinstance(dials, dict):
-            self._create_dials_from_dict(self, dials)
+            self._create_dials_from_dict(dials)
         elif isinstance(dials, list):
-            self._create_dials_from_list(self, dials)
-        self.dial_names_ordered = reversed([dial.name for dial in self.dials.values()])
+            self._create_dials_from_list(dials)
             
     def _create_dials_from_dict(self, dials: Dict[str, List[any]]):
         for name, values in dials.items():
@@ -106,6 +105,28 @@ class Odometer:
                 raise TypeError(f'Invalid dial type at index {index}. Expected Dial instance.')
         self.dials = {dial.name: dial for dial in dials}
 
+    @property
+    def current_values(self):
+        if self._exhausted:
+            retval = None
+        else:
+            retval = {name: dial.current_value for name, dial in self.dials.items()}
+        return retval
+
     def increment(self):
-        for dial in self.dial_names_ordered:
-            pass
+        if not self._exhausted:
+            carry = True
+            for dial_name in reversed(self.dials.keys()):
+                if carry:
+                    carry = self.dials[dial_name].increment()
+                else:
+                    break
+            # If carry is still True, all combinations have been exhausted
+            self._exhausted = carry
+        return self.current_values
+    
+    def reset(self):
+        self._exhausted = False
+        for dial in self.dials.values():
+            dial.current_index = 0
+        return self.current_values
