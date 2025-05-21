@@ -61,9 +61,9 @@ class Dial:
         if not name:
             raise ValueError('Dial name cannot be emtpy.')
         if not values:
-            raise ValueError('Dial values for {name} dial cannot be empty.')
+            raise ValueError(f'Dial values for {name} dial cannot be empty.')
         if not isinstance(values, list):
-            raise TypeError('Dial values for {name} dial must be a list.')
+            raise TypeError(f'Dial values for {name} dial must be a list.')
         
         self.name = name
         self.values = values
