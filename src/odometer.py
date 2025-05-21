@@ -5,7 +5,7 @@ def next_combination(current_values: Dict[str, Any], dials: Dict[str, List[Any]]
     """
     Calculate the next combination of values for an odometer-like system.
     This function simulates the behavior of an odometer, where each "dial" can take on a set of prefedined values. It
-    increments least significant dial and carries over to more siginifcant dials as needed. Optionally, it can also add
+    increments least significant dial and carries over to more significant dials as needed. Optionally, it can also add
     skipped dials to the the result.
     Args:
         current_values (Dict[str, Any]): A dictionary representing the current state of the odometer, where keys are
@@ -13,7 +13,7 @@ def next_combination(current_values: Dict[str, Any], dials: Dict[str, List[Any]]
         dials (Dict[str, List[Any]]): A dictionary defining the possible values for each dial, where keys are dial
             names and values are lists of possible values for those dials.
         add_skipped_dials (bool, optional): If True, any dials that are skipped (i.e., not present in current_values)
-            will be added to the result with their least siginificant value. Defaults to False.
+            will be added to the result with their least significant value. Defaults to False.
     Returns:
         Dict[str, Any]: A dictionary representing the next combination of values for the odometer.
         If all combinations are exhausted, it returns None.
@@ -59,7 +59,7 @@ def next_combination(current_values: Dict[str, Any], dials: Dict[str, List[Any]]
 class Dial:
     def __init__(self, name: str, values: List[Any]):
         if not name:
-            raise ValueError('Dial name cannot be emtpy.')
+            raise ValueError('Dial name cannot be empty.')
         if not values:
             raise ValueError(f'Dial values for {name} dial cannot be empty.')
         if not isinstance(values, list):
@@ -76,7 +76,7 @@ class Dial:
     def current_value(self):
         return self.values[self.current_index]
     
-    def increment(self):
+    def increment(self) -> bool:
         carry = False       # Should the increment carry over to the next dial?
         if self.current_index + 1 < len(self.values):
             self.current_index += 1
