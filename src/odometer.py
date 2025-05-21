@@ -1,21 +1,21 @@
-from typing import Dict, List, Union
+from typing import Any, Dict, Iterator, List, Union
 
 
-def next_combination(current_values: Dict[str, any], dials: Dict[str, List[any]]) -> Dict[str, any]:
+def next_combination(current_values: Dict[str, Any], dials: Dict[str, List[Any]]) -> Dict[str, Any]:
     """
     Calculate the next combination of values for an odometer-like system.
     This function simulates the behavior of an odometer, where each "dial" can take on a set of prefedined values. It
     increments least significant dial and carries over to more siginifcant dials as needed. Optionally, it can also add
     skipped dials to the the result.
     Args:
-        current_values (Dict[str, any]): A dictionary representing the current state of the odometer, where keys are
+        current_values (Dict[str, Any]): A dictionary representing the current state of the odometer, where keys are
             dial names and values are the current values of those dials.
-        dials (Dict[str, List[any]]): A dictionary defining the possible values for each dial, where keys are dial
+        dials (Dict[str, List[Any]]): A dictionary defining the possible values for each dial, where keys are dial
             names and values are lists of possible values for those dials.
         add_skipped_dials (bool, optional): If True, any dials that are skipped (i.e., not present in current_values)
             will be added to the result with their least siginificant value. Defaults to False.
     Returns:
-        Dict[str, any]: A dictionary representing the next combination of values for the odometer.
+        Dict[str, Any]: A dictionary representing the next combination of values for the odometer.
         If all combinations are exhausted, it returns None.
     Example:
         current_values = {'section': 100, 'row': 'B', 'seat': 3}
@@ -57,7 +57,7 @@ def next_combination(current_values: Dict[str, any], dials: Dict[str, List[any]]
 
 
 class Dial:
-    def __init__(self, name: str, values: List[any]):
+    def __init__(self, name: str, values: List[Any]):
         if not name:
             raise ValueError('Dial name cannot be emtpy.')
         if not values:
@@ -87,15 +87,25 @@ class Dial:
 
 
 class Odometer:
-    def __init__(self, dials: Union[Dict[str, List[any]], List[Dial]]):
+    def __init__(self, dials: Union[Dict[str, List[Any]], List[Dial]]):
         self._exhausted = False
         self.dials = {}
         if isinstance(dials, dict):
             self._create_dials_from_dict(dials)
         elif isinstance(dials, list):
             self._create_dials_from_list(dials)
+
+    def __iter__(self) -> Iterator[Dict[str, Any]]:
+        return self
+    
+    def __next__(self) -> Dict[str, Any]:
+        if self._exhausted:
+            raise StopIteration
+        result = self.current_values
+        self._increment()
+        return result
             
-    def _create_dials_from_dict(self, dials: Dict[str, List[any]]):
+    def _create_dials_from_dict(self, dials: Dict[str, List[Any]]):
         for name, values in dials.items():
             self.dials[name] = Dial(name, values)
 
@@ -104,6 +114,17 @@ class Odometer:
             if not isinstance(dial, Dial):
                 raise TypeError(f'Invalid dial type at index {index}. Expected Dial instance.')
         self.dials = {dial.name: dial for dial in dials}
+
+    def _increment(self):
+        if not self._exhausted:
+            carry = True
+            for dial_name in reversed(self.dials.keys()):
+                if carry:
+                    carry = self.dials[dial_name].increment()
+                else:
+                    break
+            # If carry is still True, all combinations have been exhausted
+            self._exhausted = carry
 
     @property
     def current_values(self):
@@ -114,15 +135,7 @@ class Odometer:
         return retval
 
     def increment(self):
-        if not self._exhausted:
-            carry = True
-            for dial_name in reversed(self.dials.keys()):
-                if carry:
-                    carry = self.dials[dial_name].increment()
-                else:
-                    break
-            # If carry is still True, all combinations have been exhausted
-            self._exhausted = carry
+        self._increment()
         return self.current_values
     
     def reset(self):
